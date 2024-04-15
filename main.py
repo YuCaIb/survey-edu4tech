@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, session
 import pymongo
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import uuid
 import turkish_rake as yucaib
 
 app = Flask(__name__)
@@ -64,6 +64,7 @@ def uye_ol():
 
         return redirect("/giris", 302)
 
+
 @app.route('/giris', methods=["GET", "POST"])
 def giris():
     if request.method == 'GET':
@@ -82,11 +83,43 @@ def giris():
         else:
             return "Kullanıcı bulunamadı ya da şifre geçersiz"
 
+@app.route('/create-survey', methods=['GET', 'POST'])
+def survey():
+    if request.method == 'GET':
+        return render_template('create-survey.html')
+    elif request.method == 'POST':
+        try:
+            # Form verilerini al
+            name = request.form['name']
+            email = request.form['email']
+            anket_basligi = request.form['anket-basligi']
+
+            # Oylama maddelerini al
+            num_options = int(request.form['numOptions'])
+            survey_id = uuid.uuid1().hex
+            options = [{"text": request.form[f'option{i + 1}'], "count": 0,'survey_id': survey_id}
+                       for i in range(num_options)]
+
+            # Anket verilerini MongoDB'ye kaydet
+            db["survey"].insert_one({
+                "_id": survey_id ,
+                "anket_basligi": anket_basligi,
+                "options": options
+            })
+
+            # Başarılı bir şekilde işlendiğine dair bir yanıt gönderelim
+            return jsonify({'message': 'Anket başarıyla kaydedildi!'})
+
+        except Exception as e:
+            return jsonify({'error': f'Hata oluştu: {str(e)}'})
+
+
 
 @app.route('/cikis', methods=["GET", "POST"])
 def cikis():
     session.pop('kullanici', None)
     return redirect("/", 302)
+
 
 
 
