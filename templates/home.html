@@ -16,18 +16,34 @@
 </head>
 <body>
 
+
+
 <div class="container-fluid p-5 bg-primary text-white text-center">
-  <h1>Anahtarlar</h1>
+    {% if session['kullanici'] %}
+      <span class="d-flex">
+        <a class="btn btn-danger" href="/cikis">Çıkış</a>
+      </span>
+      {% else %}
+      <span class="d-flex">
+        <a class="btn btn-primary" href="/giris">Giriş</a>&nbsp;
+        <a class="btn btn-warning" href="/kayit-ol">Üye Ol</a>
+      </span>
+      {% endif %}
+
+    <h1>Anahtarlar</h1>
 </div>
+
 <div class="container mt-5" >
-    <form class="center" action="/add-db" method="post">
+    <form class="center" action="/home" method="post">
         <input type="text" name="corpus"
                placeholder="Anahtar kelimeler için yazinizi giriniz">
         <button type="submit">Anahtarlar</button>
     </form>
-<div>
-    <p>{{ Corpus['keywords'] }}</p>
-</div>
+    <div id="keywords">
+        {% if keywords %}
+            <label id="keywords-label">{{ keywords|join(", ") }}</label>
+        {% endif %}
+    </div>
 </div>
 </body>
 </html>
