@@ -150,6 +150,8 @@ def survey():
 
             # Anket verilerini MongoDB'ye kaydet
             db["survey"].insert_one({
+                "yazar_adi": name,
+                "e-mail": email,
                 "_id": survey_id,
                 "anket_basligi": anket_basligi,
                 "options": options,
