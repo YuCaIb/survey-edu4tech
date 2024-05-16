@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from flask import Flask, render_template, request, redirect, jsonify, session, url_for
 import pymongo
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -150,7 +152,7 @@ def survey():
             db["survey"].insert_one({
                 "_id": survey_id,
                 "anket_basligi": anket_basligi,
-                "options": options
+                "options": options,
             })
 
             # Başarılı bir şekilde işlendiğine dair bir yanıt gönderelim
