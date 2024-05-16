@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anket Detayları</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{ survey['anket_basligi'] }}</h2>
+            <p id="survey-title" data-survey-id="{{ survey['_id'] }}"></p>
+            <ul class="list-group list-group-flush overflow-auto">
+                {% for option in survey['options'] %}
+                <li class="list-group-item">
+                    <button onclick="update_count('{{ option['survey_id'] }}', '{{ option['id'] }}')"
+                            class="btn btn-primary"
+                            data-option-id="{{ option['id']}}">{{ option['text'] }} (Oy
+                        Sayısı: <span id="count-{{ option['id'] }}">{{ option['count'] }}</span>)
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    function update_count(survey_id, option_id) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.open("POST", "/update_count", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      var data = JSON.stringify({  survey_id: survey_id, option_id: option_id});
+
+      xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                 var response = JSON.parse(xhr.responseText);
+                 var updatedCount = response.updated_count;
+                  var countElement = document.getElementById("count-" + option_id);
+                if (countElement) {
+                    countElement.textContent = updatedCount;
+                }
+                console.log("Count successfully updated.");
+              } else {
+                  console.error("İsim güncellenirken bir hata oluştu.");
+              }
+          }
+      };
+      xhr.send(data);
+  }
+</script>
+
+
+</body>
