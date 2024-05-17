@@ -5,6 +5,7 @@ import pymongo
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
+
 # import turkish_rake as yucaib
 
 app = Flask(__name__)
@@ -28,9 +29,9 @@ def home():
 def survey_details(survey_id):
     # Seçilen anketi al
     survey = survey_collection.find_one({'_id': survey_id})
-
+    comments = list(db["comments"].find({"survey_id": survey_id}))
     # Anketi html'e gönder
-    return render_template('survey_detail.html', survey=survey)
+    return render_template('survey_detail.html', survey=survey,comments=comments)
 
 
 # @app.route('/survey/<string:survey_id>')
@@ -130,6 +131,27 @@ def giris():
             return "Kullanıcı bulunamadı ya da şifre geçersiz"
 
 
+@app.route('/add-comment/<survey_id>', methods=['POST'])
+def add_comment(survey_id):
+    try:
+        author = request.form['author']
+        email = request.form['email']
+        content = request.form['content']
+
+        comment = {
+            "survey_id": survey_id,
+            "author": author,
+            "email": email,
+            "content": content
+        }
+
+        db["comments"].insert_one(comment)
+
+        return redirect(url_for('survey_details', survey_id=survey_id))
+    except Exception as e:
+        return jsonify({'error': f'Hata oluştu: {str(e)}'})
+
+
 @app.route('/create-survey', methods=['GET', 'POST'])
 def survey():
     if request.method == 'GET':
@@ -158,7 +180,7 @@ def survey():
             })
 
             # Başarılı bir şekilde işlendiğine dair bir yanıt gönderelim
-            return jsonify({'message': 'Anket başarıyla kaydedildi!'})
+            return redirect(url_for('survey_details', survey_id=survey_id))
 
         except Exception as e:
             return jsonify({'error': f'Hata oluştu: {str(e)}'})

@@ -44,7 +44,7 @@
             <div class="survey-list">
                 <h2>Anketler Listesi</h2>
                 <ul class="list-group list-group-flush">
-                    {% for survey in surveys %}
+                    {% for survey in surveys|reverse %}
                     <li class="list-group-item">
                         <a href="{{ url_for('survey_details', survey_id=survey['_id']) }}">{{survey['anket_basligi']}}</a>
                     </li>
@@ -54,18 +54,18 @@
         </div>
         <div class="col-md-8">
             <div class="survey-details">
-                <h3>{{surveys[0]['anket_basligi']}}</h3>
+                <h3>{{surveys[-1]['anket_basligi']}}</h3>
                 <div>
-                    {% for option in surveys[0]['options']%}
+                    {% for option in surveys[-1]['options']%}
                     <span style="margin-right: 2rem">{{option.text}} | {{option.count}} </span>
                     {% endfor %}
                 </div>
                 <div>
                     <label for="author" class="form-label">Yazar Adı:</label>
-                    <span id="author">{{surveys[0]['yazar_adi']}}</span>
+                    <span id="author">{{surveys[-1]['yazar_adi']}}</span>
                 </div>
                 <div>
-                    <a href="{{url_for('survey_details', survey_id= surveys[0]['_id'])}}">Oy kullanmak için
+                    <a href="{{url_for('survey_details', survey_id= surveys[-1]['_id'])}}">Oy kullanmak için
                         tıklayınız.</a>
                 </div>
             </div>

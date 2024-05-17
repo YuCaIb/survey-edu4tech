@@ -15,10 +15,12 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
             <div class="col-md-12">
                 <h2>{{ survey['anket_basligi'] }}</h2>
+                <p>Yazar Adı: {{ survey['yazar_adi'] }}</p>
+                <p>E-posta: {{ survey['e-mail'] }}</p>
                 <p id="survey-title" data-survey-id="{{ survey['_id'] }}"></p>
                 <ul class="list-group list-group-flush overflow-auto">
                     {% for option in survey['options'] %}
@@ -31,6 +33,38 @@
                     </li>
                     {% endfor %}
                 </ul>
+
+                <h3>Yorumlar</h3>
+                <ul class="list-group list-group-flush overflow-auto">
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <li class="list-group-item">
+                            <p><strong>{{ comment['author'] }}:</strong> {{ comment['content'] }}</p>
+                            <p><small>{{ comment['email'] }}</small></p>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">Ankette herhangi bir yorum yok.</li>
+                    {% endif %}
+                </ul>
+
+                <h3>Yorum Ekle</h3>
+                <form action="{{ url_for('add_comment', survey_id=survey['_id']) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Adınız:</label>
+                        <input type="text" class="form-control" id="author" name="author" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta Adresiniz:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Yorumunuz:</label>
+                        <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Yorum Gönder</button>
+                </form>
+
                 <a href="/" class="btn btn-success mt-3">Anasayfaya Git</a> <!-- Anasayfaya Git butonu -->
             </div>
         </div>
